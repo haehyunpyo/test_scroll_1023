@@ -38,16 +38,16 @@ tr{
 
 			let currentScrollTop = $(window).scrollTop();
 			// 다운스크롤 이벤트 발생
-			if (currentScrollTop - lastScrollTop > 0) {
+			if (currentScrollTop - lastScrollTop >= 0) {
 				//console.log("down-scroll");
-				console.log("currentScrollTop : " + $(window).scrollTop()); // 194.99998474121094
-				console.log("lastScrollTop : " + lastScrollTop); 
+				//console.log("currentScrollTop : " + $(window).scrollTop()); // 194.99998474121094
+				//console.log("lastScrollTop : " + lastScrollTop); 
 				//console.log($(document).height()-$(window).height());
 				
 				percent = ($(window).scrollTop() / ($(document).height() - $(window).height())) * 100;
-				console.log("percent : " + percent);
 				
-				if( percent > 97 ){
+				if( percent >= 95 ){
+
 					let addList = "";
 					let lastbno = $(".scrolling:last").attr("data-bno");
 					//console.log(lastbno);
@@ -95,7 +95,6 @@ tr{
 									});
 								
 								percent = 0;
-								console.log("퍼센트 : " + percent);
 
 								
 							} // if (data != "")
@@ -110,6 +109,7 @@ tr{
 				} // if	(percent > ~)
 				
 				lastScrollTop = currentScrollTop;
+				//console.log("lastScrollTop : " + lastScrollTop)
 				
 			}	// 다운스크롤 이벤트
 				// 업스크롤 이벤트 발생
@@ -119,10 +119,56 @@ tr{
 					
 					let addList = "";
 					let firstbno = $(".scrolling:first").attr("data-bno");
-					console.log(firstbno);
-					
-					
-					
+					//console.log(firstbno);
+		
+					$.ajax({
+						url: './scrollUp',
+						type: 'post',
+						data: {bno : firstbno},
+						dataType: 'json',
+						success: function(data){
+							
+							if(data != ""){
+								//alert("와");
+								$(data).each(function(){
+									console.log(this.list[0].bno);
+									for(let i = 0; i<this.list.length; i++){
+										
+										addList +=	"<tr class=" + "'listToChange'" + ">" 
+										+	 	"<td class=" +  "'scrolling'" + " data-bno='" + this.list[i].bno +"'>"
+										+			this.list[i].bno
+										+		"</td>"
+										+		"<td class=" +  "title'>" + this.list[i].btitle + "</td>"		
+										+		"<td>" + this.list[i].m_name + "</td>"
+										+		"<td>" + this.list[i].bdate + "</td>"
+										+		"<td>" + this.list[i].blike + "</td>"
+								 		+ 	"</tr>";
+									}
+									
+									
+								});	// each
+								
+								$(".listToChange").remove();	// 기존게시글 지우기
+								$(".scrollLocation").after(addList);	// 추가게시글 띄우기
+								
+								
+								let position = ($(document).height() - $(window).height()) -10;
+								//console.log("Top: " + position.top);
+								window.scroll({
+									  top: position.top,
+									  left: 0,
+									  behavior: "smooth"
+									});
+								
+								percent = 0;
+								
+							} // if (data != "")
+						}, // success
+						error : function(error){
+							//alert("에러남");
+						} // error
+						
+					});	// ajax
 					
 				}	// if ($(window).scrollTop() <= 0)
 				

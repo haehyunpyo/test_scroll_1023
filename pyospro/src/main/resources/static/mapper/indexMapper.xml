@@ -18,4 +18,12 @@
 		]]>
 	</select>
 	
+	<select id="preList" parameterType="Integer" resultType="Map">
+		<![CDATA[ 
+			SELECT * FROM boardview 
+			WHERE bno > #{bno} and bno < #{bno}+50
+			ORDER BY bno DESC LIMIT 50 
+		]]>
+	</select>
+	
 </mapper>
